@@ -22,7 +22,7 @@ Dim objArgs				: 	Set objArgs = WScript.Arguments
 Const ForReading = 1, ForWriting = 2, ForAppending = 8
 
 ' Script variables
-Dim strVersion			:	strVersion = "0.2.0"
+Dim strVersion			:	strVersion = "0.3.0"
 
 ' Variables required for logging.
 Dim fileLog
@@ -55,6 +55,7 @@ cleanOldSettings
 setCustomHomepage
 setCustomUseragent
 setNTLMAuthTrustedURIs
+setAuthTrustedURIs
 setDisableDefaultCheck
 setDisableImport
 setDisableUpdates
@@ -227,6 +228,16 @@ Sub setNTLMAuthTrustedURIs()
 	If keyNTLMAuthTrustedURIs <> "" Then
 		writeLog "Setting NTLM-trusted URIs to " & keyNTLMAuthTrustedURIs
 		appendLockPreference "network.automatic-ntlm-auth.trusted-uris",keyNTLMAuthTrustedURIs,True
+	End If
+End Sub
+
+Sub setAuthTrustedURIs()
+	Dim keyAuthTrustedURIs
+	keyAuthTrustedURIs = getRegistryKey(policiesRegistry & "\AuthTrustedURIs")
+	removePreference("network.negotiate-auth.trusted-uris")
+	If keyAuthTrustedURIs <> "" Then
+		writeLog "Setting Auth-trusted URIs to " & keyAuthTrustedURIs
+		appendLockPreference "network.negotiate-auth.trusted-uris",keyAuthTrustedURIs,True
 	End If
 End Sub
 
@@ -483,7 +494,6 @@ Sub setFileLocations()
 End Sub
 
 Sub forceConfigFiles()
-
 	On Error Resume Next
 	Dim strConfigFile, strConfigObscure, fileAllSettings, arrAllSettingsContents
 	strConfigFile = "pref(" & Chr(34) & "general.config.filename" & Chr(34) & "," & Chr(34) & "mozilla.cfg" & Chr(34) & ");"
